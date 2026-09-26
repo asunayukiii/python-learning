@@ -1,0 +1,109 @@
+class Device:
+    def __init__(self, hostname, ip):
+        self.hostname = hostname
+        self.ip = ip
+        self.__is_online = False
+
+    def connect(self):
+        self.__is_online = True
+        print(f"{self.hostname} подключён")
+
+    def disconnect(self):
+        self.__is_online = False
+        print(f"{self.hostname} отключён")
+
+    def is_online(self):
+        return self.__is_online
+
+
+class Service:
+    def __init__(self, name, port):
+        self.name = name
+        self.port = port
+        self.__is_running = False
+
+    def start(self):
+        self.__is_running = True
+        print(f"{self.name} запущен на порту {self.port}")
+
+    def stop(self):
+        self.__is_running = False
+        print(f"{self.name} остановлен")
+
+    def is_running(self):
+        return self.__is_running
+
+class Switch(Device):
+    def __init__(self, hostname, ip, ports):
+        super().__init__(hostname, ip)
+        self.ports = ports
+
+    def show_ports(self):
+        print(f"{self.hostname}: {self.ports} портов")
+
+class Router(Device):
+    def __init__(self, hostname, ip, routes):
+        super().__init__(hostname, ip)
+        self.routes = routes
+
+    def show_routes(self):
+        print(f"{self.hostname}: маршрутов {len(self.routes)}")
+
+class Firewall(Device):
+    def __init__(self, hostname, ip, rules):
+        super().__init__(hostname, ip)
+        self.rules = rules
+
+    def add_rule(self, rule):
+        self.rules.append(rule)
+        print(f"Правило {rule} добавлено")
+
+class WebServer(Service):
+    def __init__(self, name, port):
+        super().__init__(name, port)
+
+    def serve(self):
+        print(f"{self.name}: отдаю HTML")
+
+class DNSServer(Service):
+    def __init__(self, name, port):
+        super().__init__(name, port)
+
+    def serve(self):
+        print(f"{self.name}: преобразовываю домены")
+
+# Создаём устройства
+sw = Switch("sw-01", "10.0.0.1", 24)
+r = Router("r-01", "10.0.0.2", ["0.0.0.0/0", "10.0.0.0/8"])
+fw = Firewall("fw-01", "10.0.0.3", [])
+
+# Подключаем
+sw.connect()
+r.connect()
+fw.connect()
+
+# Проверяем
+print(sw.is_online())
+print(r.is_online())
+
+# Специфичные методы
+sw.show_ports()
+r.show_routes()
+fw.add_rule("deny all")
+
+# Отключаем
+sw.disconnect()
+print(sw.is_online())
+
+# Сервисы
+web = WebServer("nginx", 80)
+dns = DNSServer("bind", 53)
+
+web.start()
+dns.start()
+
+web.serve()
+dns.serve()
+
+web.stop()
+print(web.is_running())
